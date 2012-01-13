@@ -12,13 +12,286 @@ by Ingy döt Net
 
 Seattle Python Interest Group
 
-Thu Jan 12 14:36:52 2012
+Thursday January 12, 2012
 
 ----
-== Ideas for the talk
+== Ingy döt Net
 
-* one
-* two
+* Inventor of YAML
+* Father of Acmeism
+  * Love of all Programming Languages and Communities
+* Acmeist Activator
+  * Rejoined ActiveState in the Clouds last July
+
+----
+== Quick Stackato Demo
+
+* ActiveState in the Cloud
+* PaaS - Platform as a Service
+  * OS, Web Server, Language, Database (Services)
+  * Like Heroku, DotCloud, Google Apps
+* Stackato is *Private* PaaS
+  * Cloud ease-of-use you host anywhere!
+  * Free MicroCloud license 
+* Quick Python Demo
+
+----
+== What Makes a Good Programming Language?
+
++1) An Enthusiastic Community
++2) Support for Modules
++3) An Imperial ShitTon of Modules
+
+----
+== Ingy ♥  Modules
+
+* Perl Icon
+  * 100+ Perl modules on CPAN
+  * 40+ Perl related events
+* JavaScript Hacker
+  * Many JSAN modules
+  * Even Perl/JS modules (Jemplate, pQuery)
+* Pythonista
+  * Several PyPI modules
+* Bash Boy
+  * Bash code, tests, docs
+* Ruby Nuby
+  * No gems yet...
+* Haskell Rascal
+  * Pugs is back!
+
+----
+== What is Acmeism?
+
+A) 1910-1912 Russian Poetry Movement?
+B) The Religion of Silly Perl Modules?
+3) The Love of Orange?
+D) All/None of the Above
+
++    http://acmeism.org
+
+Acmeism is the belief that language naturally
+tends to divide people and ideas, but that
+technology can overcome this tendency.
+
+People who create technology that is not limited
+to a particular language are known as Acmeists.
+
+----
+== Acmeism
+
+Acmeism is about doing things that help
+several programming languages at once.
+
+C++ & Clojure & Erlang & CoffeeScript & Go &
+Java & JavaScript & Perl & PHP & Python &
+Ruby & Scala & Tcl & ...
+
+    http://rosettacode.org
+
+A Code Wiki - 402 Languages x 560 Problems
+
+----
+== My Goal as an Acmeist Developer
+
+* I Want to Release a Module
++* In 12 different languages
+  * CPAN, PyPI, RubyGems, JSAN, 6PAN, Hackage,
+    npm, PEAR, Maven, CEAN, BPAN, etc
++* At Once!
++* Every Day!
+
++* I would like to have 1000 modules in every language!
+
+----
+== How Can I Do That?
+
++* C'Dent   - Acmeist Programming Language
+  * Compile your modules to any language
+
++* TestML - Acmeist Unit Test Framework
+  * Unit test language that runs in any environment
+
++* Stardoc - Acmeist Documentation
+  * Compile your docs to any other format
+
+* Pegex - Acmeist PEG Language
+  * PEG == Parsing Expression Grammar
+
++ Pegex is the key. C'Dent, TestML and Stardoc all use Pegex!
+
+----
+== Some JSON for You
+
+    {
+        "name": "Homer Simpson",
+        "cartoon": true,
+        "age": 42,
+        "food": [
+            "donut", "donut", "donut"
+        ],
+        "family": {
+            "wife": "Marge",
+            "son": "Bart"
+        }
+    } 
+
+----
+# JSON Pegex Grammar
+
+json: <map> | <seq>
+node: <map> | <seq> | <scalar>
+map: /~<LCURLY>~/ <pair>* % /~<COMMA>~/ /~<RCURLY>~/
+pair: <string> /~<COLON>~/ <node>
+seq: /~<LSQUARE>~/ <node>* % /~<COMMA>~/ /~<RSQUARE>~/
+scalar: <string> | <number> | <boolean> | <null>
+string: /<DOUBLE>((?:<BACK><BACK>|<BACK><DOUBLE>|[^<DOUBLE><BREAK>])*)<DOUBLE>/
+number: /(<DASH>?<DIGIT>+(?:<DOT><DIGIT>*)?|<DOT><DIGIT>+)/
+boolean: <true> | <false>
+true: /true/
+false: /false/
+null: /null/
+
+----
+ # Compiled JSON Pegex Grammar
+ +top: json
+ json:
+   .any:
+   - .ref: map
+   - .ref: seq
+ node:
+   .any:
+   - .ref: map
+   - .ref: seq
+   - .ref: scalar
+ map:
+   .all:
+   - .rgx: \s*\{\s*
+   - +min: 0
+     .ref: pair
+     .sep:
+       .rgx: \s*,\s*
+   - .rgx: \s*\}\s*
+ pair:
+   .all:
+   - .ref: string
+   - .rgx: \s*:\s*
+   - .ref: node
+ seq:
+   .all:
+   - .rgx: \s*\[\s*
+   - +min: 0
+     .ref: node
+     .sep:
+       .rgx: \s*,\s*
+   - .rgx: \s*\]\s*
+ scalar:
+   .any:
+   - .ref: string
+   - .ref: number
+   - .ref: boolean
+   - .ref: 'null'
+ string:
+   .rgx: '"((?:\\\\|\\"|[^"\n])*)"'
+ number:
+   .rgx: (\-?[0-9]+(?:\.[0-9]*)?|\.[0-9]+)
+ boolean:
+   .any:
+   - .ref: 'true'
+   - .ref: 'false'
+ 'true':
+   .rgx: 'true'
+ 'false':
+   .rgx: 'false'
+ 'null':
+   .rgx: 'null'
+
+---- i0
+== How Pegex Works
+
+    # Example usage in Python
+    from pegex import Grammar
+
+    data_tree = Grammar(text=grammar_text).parse(input)
+
+----
+== Pegex Classes
+
+* Compiler - Compile grammar into data structure
+* Grammar - Class encasulating a grammar
+* Parser - The parsing Runtime
+* Receiver - Container of rule match methods
+* Input - Encapsulate an Input stream
+
+----
+== Some Pegex Trivia...
+
+    ...before we play with Pegex
+
+* Pegex is pretty fast
+  * No optimizations yet
+* Pegex is self hosting
+  * Pegex parses Pegex
+* Pegex has no backtracking yet
+  * Not needed yet (<first> <middle>? <last>)
+* Pegex tests are in TestML
+  * TestML is written in Pegex!
+* Pegex is full on Perl
+  * Compiler and Runtime
+* Python has port of the Runtime
+  * Easy to use Perl compiler to bootstrap (YAML, JSON)
+* Pegex wants to be written in C'Dent
+  * Easier to port and maintain
+* Pegex Runtime could be in C or C++ or Haskell
+  * libpegex
+* Pegex Parsers can have multiple Receivers
+  * AST (wrapped and unwrapped) is default Receiver
+  * Receivers can invoke new Parsers
+* Clean Separation
+  * Compiler = Grammar + Parser + Receiver
+  * All Subclassable or Swap-able
+* Pegex::Regex
+  * Compare to Regexp::Grammars
+
+----
+== Pegex Live Demos
+
+* Pegex Grammars
+  * ../pegex-pgx/
+    * make test
+  * ../testml-pgx/
+  * ../json-pgx/
+  * ../yaml-pgx/
+  * ../crontab-pgx/
+  * ../cdent-pgx/
+* Pegex Implementations
+  * ../pegex-py/
+  * ../pegex-pm/
+  * ../pegex-json-pm/
+  * ../pegex-yaml-pm/
+  * ../pegex-crontab-pm/
+* TestML Example
+  * ../pegex-pm/t/compiler.t
+
+----
+== Stupid Pegex Tricks
+
+perl -Ilib -MPegex::JSON::Grammar=compile
+
+perl -MXXX -MPegex::JSON -e 'XXX + Pegex::JSON->new->parse(q/{"foo": 42, "bar": [1,2,3]}/)'
+
+perl -MXXX -MPegex -e 'XXX pegex("src/pegex.pgx")->parse("src/pegex.pgx")'
+
+perl -MXXX -MPegex -e 'XXX pegex("src/pegex.pgx", {wrap=>1})->parse("src/pegex.pgx")'
+
+perl -MXXX -MPegex -e 'XXX pegex("src/pegex.pgx", {receiver=>"Pegex::Pegex::AST"})->parse("src/pegex.pgx")'
+
+----
+== Pegex Live Development
+
+* pegex-json-py
 
 ----
 == The End
+
+== http://ingydotnet.github.com/pegex-seapig2012-talk/
